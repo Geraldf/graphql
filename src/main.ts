@@ -1,11 +1,11 @@
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import {graphqlExpress, graphiqlExpress} from 'apollo-server-express';
-import {Schema} from './schema';
-import * as cors from 'cors';
-import * as helmet from 'helmet';
-import * as morgan from 'morgan';
-import {persons, findPerson, addPerson} from './data-base/person-database';
+import * as express from "express";
+import * as bodyParser from "body-parser";
+import { graphqlExpress, graphiqlExpress } from "apollo-server-express";
+import { Schema } from "./schema";
+import * as cors from "cors";
+import * as helmet from "helmet";
+import * as morgan from "morgan";
+import { persons, findPerson, addPerson } from "./data-base/person-database";
 
 // Default port or given one.
 export const GRAPHQL_ROUTE = "/graphql";
@@ -21,9 +21,13 @@ interface IMainOptions {
 
 /* istanbul ignore next: no need to test verbose print */
 function verbosePrint(port, enableGraphiql) {
-  console.log(`GraphQL Server is now running on http://localhost:${port}${GRAPHQL_ROUTE}`);
+  console.log(
+    `GraphQL Server is now running on http://localhost:${port}${GRAPHQL_ROUTE}`
+  );
   if (true === enableGraphiql) {
-    console.log(`GraphiQL Server is now running on http://localhost:${port}${GRAPHIQL_ROUTE}`);
+    console.log(
+      `GraphiQL Server is now running on http://localhost:${port}${GRAPHIQL_ROUTE}`
+    );
   }
 }
 
@@ -45,37 +49,43 @@ export function main(options: IMainOptions) {
   }
 
   let testConnector = new TestConnector();
-  app.use(GRAPHQL_ROUTE, bodyParser.json(), graphqlExpress({
-    context: {
-      testConnector,
-      persons,
-      findPerson,
-      addPerson
-    },
-    schema: Schema,
-  }));
+  app.use(
+    GRAPHQL_ROUTE,
+    bodyParser.json(),
+    graphqlExpress({
+      context: {
+        testConnector,
+        persons,
+        findPerson,
+        addPerson
+      },
+      schema: Schema
+    })
+  );
 
   if (true === options.enableGraphiql) {
-    app.use(GRAPHIQL_ROUTE, graphiqlExpress({endpointURL: GRAPHQL_ROUTE}));
+    app.use(GRAPHIQL_ROUTE, graphiqlExpress({ endpointURL: GRAPHQL_ROUTE }));
   }
 
   return new Promise((resolve, reject) => {
-    let server = app.listen(options.port, () => {
-      /* istanbul ignore if: no need to test verbose print */
-      if (options.verbose) {
-        verbosePrint(options.port, options.enableGraphiql);
-      }
+    let server = app
+      .listen(options.port, () => {
+        /* istanbul ignore if: no need to test verbose print */
+        if (options.verbose) {
+          verbosePrint(options.port, options.enableGraphiql);
+        }
 
-      resolve(server);
-    }).on("error", (err: Error) => {
-      reject(err);
-    });
+        resolve(server);
+      })
+      .on("error", (err: Error) => {
+        reject(err);
+      });
   });
 }
 
 /* istanbul ignore if: main scope */
 if (require.main === module) {
-  const PORT = parseInt(process.env.PORT || '3000', 10);
+  const PORT = parseInt(process.env.PORT || "3000", 10);
 
   // Either to export GraphiQL (Debug Interface) or not.
   const NODE_ENV = process.env.NODE_ENV !== "production" ? "dev" : "production";
@@ -90,6 +100,6 @@ if (require.main === module) {
     enableGraphiql: EXPORT_GRAPHIQL,
     env: NODE_ENV,
     port: PORT,
-    verbose: true,
+    verbose: true
   });
 }
